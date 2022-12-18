@@ -1,6 +1,6 @@
 from typing import Callable
 
-from lib.shared import safe_access
+from common import safe_access
 
 TEST_PROJECT_ID = "s3://ab-283419117448-s2t-audio/TEST_PROJECT/"
 AUDIO_BUCKET_NAME = "ab-283419117448-s2t-audio"
