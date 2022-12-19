@@ -14,12 +14,17 @@ def get_project_from_key(s3_key: str):
     return s3_key.split('/')[1] if s3_key.split('/') else None
   return None
 
-def handle_s3_notification_events(fn: Callable):
-  def inner(*args, **kwargs):
-    event = args[0]
-    bucket_name = safe_access(event, ['Records', 0, 's3', 'bucket', 'name'])
-    key = safe_access(event, ['Records', 0, 's3', 'object', 'key'])
-    kwargs["bucket_name"] = bucket_name
-    kwargs["key"] = key
-    fn(*args, **kwargs)
-  return inner
+def handle_s3_notification_events(target: str):
+  def decorator(fn: Callable):
+    def inner(*args, **kwargs):
+      if target == 'event':
+        payload = args[0]
+      else:
+        payload = kwargs[target]
+      bucket_name = safe_access(payload, ['Records', 0, 's3', 'bucket', 'name'])
+      key = safe_access(payload, ['Records', 0, 's3', 'object', 'key'])
+      kwargs["bucket_name"] = bucket_name
+      kwargs["key"] = key
+      fn(*args, **kwargs)
+    return inner
+  return decorator
